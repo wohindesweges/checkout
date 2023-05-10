@@ -19,7 +19,7 @@ public class WsfAdapter extends DataAdapter {
 
     private byte[] readTestXML() {
 
-        //TODO Connect TO WSF schnittstelle
+        //TODO Connect TO WSF API
         try (InputStream is = new FileInputStream("./src/test/resources/kwkData.xml")) {
             return is.readAllBytes();
         } catch (IOException e) {
