@@ -31,7 +31,7 @@ public class PowerInputController extends Controller<PowerInput, PowerInputRepos
 
     @Override
     @PostMapping("/" + pathRoot)
-    public EntityModel<PowerInput> put(PowerInput newModelEntity) {
+    public EntityModel<PowerInput> put(@RequestBody PowerInput newModelEntity) {
         return super.put(newModelEntity);
     }
 

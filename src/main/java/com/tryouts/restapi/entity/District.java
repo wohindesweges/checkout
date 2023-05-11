@@ -27,6 +27,7 @@ public class District extends ModelEntity {
         this.name = name;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -55,19 +56,6 @@ public class District extends ModelEntity {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        District user = (District) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
-
 
     @Override
     public String toString() {
@@ -78,5 +66,18 @@ public class District extends ModelEntity {
     @Override
     public String getAllRelationDiscription() {
         return "allDistricts";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        District district = (District) o;
+        return Objects.equals(name, district.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

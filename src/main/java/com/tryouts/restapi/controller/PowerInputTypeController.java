@@ -5,10 +5,7 @@ import com.tryouts.restapi.processor.assembler.PowerInputTypeAssembler;
 import com.tryouts.restapi.repo.PowerInputTypeRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PowerInputTypeController extends Controller<PowerInputType, PowerInputTypeRepository, PowerInputTypeAssembler> {
@@ -33,7 +30,7 @@ public class PowerInputTypeController extends Controller<PowerInputType, PowerIn
 
     @Override
     @PostMapping("/" + pathRoot)
-    public EntityModel<PowerInputType> put(PowerInputType newModelEntity) {
+    public EntityModel<PowerInputType> put(@RequestBody PowerInputType newModelEntity) {
         return super.put(newModelEntity);
     }
 }

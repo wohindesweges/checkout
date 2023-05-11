@@ -34,24 +34,13 @@ public class PowerInputType extends ModelEntity {
         return "allPowerInputTypes";
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public Class<? extends Controller> getController() {
-        return PowerInputTypeController.class;
-    }
-
-    @Override
-    public void validate() throws NotValid {
-        if (term == null) {
-            throw new NotValid("Missing value: term", this);
-        }
     }
 
     public String getTerm() {
@@ -69,6 +58,19 @@ public class PowerInputType extends ModelEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public void validate() throws NotValid {
+        if (term == null) {
+            throw new NotValid("Missing value: term", this);
+        }
+    }
+
+    @Override
+    public Class<? extends Controller> getController() {
+        return PowerInputTypeController.class;
+    }
+
 
     @Override
     public boolean equals(Object o) {

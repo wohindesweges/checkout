@@ -21,16 +21,20 @@ public class PowerInput extends ModelEntity {
 
     private boolean wholeCity;
     @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
-    @JoinColumn(name = "powerInputID")
+    @JoinColumn(name = "powerInputId")
     private PowerInputType powerInputType;
     @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
-    @JoinColumn(name = "districtID")
+    @JoinColumn(name = "districtId")
     private District district;
 
     public PowerInput() {
 
     }
 
+    @Override
+    public Long getOldId() {
+        return super.getOldId();
+    }
 
     public Long getId() {
         return id;
@@ -61,6 +65,7 @@ public class PowerInput extends ModelEntity {
         }
 
     }
+
 
     public Double getPowerinput() {
         return powerInput;

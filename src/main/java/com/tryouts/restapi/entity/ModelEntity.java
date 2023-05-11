@@ -3,9 +3,11 @@ package com.tryouts.restapi.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tryouts.restapi.controller.Controller;
 import com.tryouts.restapi.entity.exception.NotValid;
+import jakarta.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public abstract class ModelEntity {
-    long oldId;
+    Long oldId;
 
 
     @JsonIgnore
@@ -13,11 +15,11 @@ public abstract class ModelEntity {
 
     public abstract Long getId();
 
-    public long getOldId() {
+    public Long getOldId() {
         return oldId;
     }
 
-    public void setOldId(long oldId) {
+    public void setOldId(Long oldId) {
         this.oldId = oldId;
     }
 
@@ -25,4 +27,5 @@ public abstract class ModelEntity {
     public abstract Class<? extends Controller> getController();
 
     public abstract void validate() throws NotValid;
+    
 }

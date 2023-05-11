@@ -5,6 +5,7 @@ import com.tryouts.restapi.entity.ModelEntity;
 import com.tryouts.restapi.entity.exception.NotValid;
 import com.tryouts.restapi.processor.assembler.Assembler;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -13,6 +14,8 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 public abstract class Controller<E extends ModelEntity, R extends JpaRepository<E, Long>, A extends Assembler<E>> {
 
@@ -35,18 +38,19 @@ public abstract class Controller<E extends ModelEntity, R extends JpaRepository<
     public EntityModel<E> put(@RequestBody E newModelEntity) throws NotValid {
         E savedModelEntity = null;
         newModelEntity.validate();
-        if (repository.exists(Example.of(newModelEntity))) {
-            E exisistModelEntity = repository.findOne(Example.of(newModelEntity)).orElse(newModelEntity);
-            newModelEntity.setOldId(exisistModelEntity.getId());
-            savedModelEntity = repository.save(newModelEntity);
-        } else {
-            savedModelEntity = repository.save(newModelEntity);
+        //FIXME --> implementation of example+matcher missing --> error during findAll()
+        List<E> allEntities = repository.findAll(Example.of(newModelEntity), Sort.by(Sort.Direction.DESC, "id"));
+        if (!allEntities.isEmpty()) {
+            E existingModelEntity = allEntities.stream().findFirst().orElse(newModelEntity);
+            newModelEntity.setOldId(existingModelEntity.getId());
         }
+        savedModelEntity = repository.save(newModelEntity);
         return assembler.toModel(savedModelEntity);
     }
 
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (repository.findById(id).isPresent()) {
+            //TODO recursive delete for historyElements
             repository.deleteById(id);
             return ResponseEntity.accepted().build();
         }

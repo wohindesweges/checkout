@@ -20,7 +20,7 @@ public interface Assembler<E extends ModelEntity> extends RepresentationModelAss
         ArrayList<Link> links = new ArrayList<>();
         links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getId())).withSelfRel());
         links.add(linkTo(methodOn(modelEntity.getController()).all()).withRel(modelEntity.getAllRelationDiscription()));
-        if (modelEntity.getOldId() != 0L) {
+        if (modelEntity.getOldId() != null) {
             links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getOldId())).withRel("IDLastVersion"));
         }
         return EntityModel.of(modelEntity, links);
