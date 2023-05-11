@@ -1,4 +1,4 @@
-package com.tryouts.restapi.dataApi;
+package com.tryouts.restapi.dataAdapter;
 
 
 public abstract class DataAdapter {

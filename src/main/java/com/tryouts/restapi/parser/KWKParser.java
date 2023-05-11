@@ -1,16 +1,12 @@
 package com.tryouts.restapi.parser;
 
-import com.tryouts.restapi.dataApi.WsfAdapter;
-import com.tryouts.restapi.model.District;
-import com.tryouts.restapi.model.PowerInput;
-import com.tryouts.restapi.model.PowerInputType;
-import com.tryouts.restapi.repo.DistrictRepository;
-import com.tryouts.restapi.repo.PowerInputRepository;
-import com.tryouts.restapi.repo.PowerInputTypeRepository;
+import com.tryouts.restapi.dataAdapter.WsfAdapter;
+import com.tryouts.restapi.entity.District;
+import com.tryouts.restapi.entity.PowerInput;
+import com.tryouts.restapi.entity.PowerInputType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -31,9 +27,7 @@ import java.util.stream.Stream;
 
 @Controller
 public class KWKParser implements IParser {
-    private final PowerInputTypeRepository powerInputTypeRepository;
-    private final PowerInputRepository powerInputRepository;
-    private final DistrictRepository districtRepository;
+
     Logger LOG = LogManager.getLogger(KWKParser.class);
     WsfAdapter dataAdapter;
     private Document doc;
@@ -47,11 +41,9 @@ public class KWKParser implements IParser {
     private HashSet<District> districts;
 
     @Autowired
-    public KWKParser(WsfAdapter dataAdapter, @Qualifier("small") DistrictRepository districtRepository, PowerInputRepository powerInputRepository, PowerInputTypeRepository powerInputTypeRepository) {
+    public KWKParser(WsfAdapter dataAdapter) {
         this.dataAdapter = dataAdapter;
-        this.districtRepository = districtRepository;
-        this.powerInputRepository = powerInputRepository;
-        this.powerInputTypeRepository = powerInputTypeRepository;
+
     }
 
     private static Stream<Node> getNodeStream(NodeList nodeList) {
@@ -68,7 +60,6 @@ public class KWKParser implements IParser {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             doc = builder.parse(new ByteArrayInputStream(input));
             doc.getDocumentElement().normalize();
-
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -96,14 +87,12 @@ public class KWKParser implements IParser {
     }
 
     @Override
-    public void saveData() {
-        if (districts != null && powerInputs != null) {
-            districtRepository.saveAll(districts);
-            powerInputTypeRepository.save(powerInputType);
-            powerInputRepository.saveAll(powerInputs);
-        }
-
+    public void clearData() {
+        currentDistrict = null;
+        powerInputs = new LinkedList<>();
+        districts = new HashSet<>();
     }
+
 
     private void parseYearPowerInput(Node node1) {
         String yearSubstring = node1.getNodeName().substring(5, node1.getNodeName().length() - 1);
@@ -128,5 +117,9 @@ public class KWKParser implements IParser {
 
     public HashSet<District> getDistricts() {
         return districts;
+    }
+
+    public List<PowerInputType> getPowerInputType() {
+        return List.of(powerInputType);
     }
 }

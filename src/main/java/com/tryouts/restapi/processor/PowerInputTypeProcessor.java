@@ -2,7 +2,7 @@ package com.tryouts.restapi.processor;
 
 import com.tryouts.restapi.controller.DistrictController;
 import com.tryouts.restapi.controller.PowerInputTypeController;
-import com.tryouts.restapi.model.PowerInput;
+import com.tryouts.restapi.entity.PowerInput;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.server.RepresentationModelProcessor;

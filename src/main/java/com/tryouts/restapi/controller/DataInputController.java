@@ -1,6 +1,12 @@
 package com.tryouts.restapi.controller;
 
 import com.tryouts.restapi.parser.KWKParser;
+import com.tryouts.restapi.repo.DistrictRepository;
+import com.tryouts.restapi.repo.PowerInputRepository;
+import com.tryouts.restapi.repo.PowerInputTypeRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,17 +15,28 @@ public class DataInputController {
 
 
     private final KWKParser kwkParser;
+    private final DistrictRepository districtRepository;
+    private final PowerInputRepository powerInputRepository;
+    private final PowerInputTypeRepository powerInputTypeRepository;
 
-    public DataInputController(KWKParser kwkParser) {
+    public DataInputController(KWKParser kwkParser,//
+                               DistrictRepository districtRepository,//
+                               PowerInputRepository powerInputRepository, //
+                               PowerInputTypeRepository powerInputTypeRepository) {
         this.kwkParser = kwkParser;
+        this.districtRepository = districtRepository;
+        this.powerInputRepository = powerInputRepository;
+        this.powerInputTypeRepository = powerInputTypeRepository;
     }
 
-    @GetMapping("/collectData")
-    void collectData() {
+    @GetMapping("/initKWKData")
+    ResponseEntity<?> collectData() {
         kwkParser.readInput();
         kwkParser.parse();
-        kwkParser.saveData(); // TODO --> sava data not in parser
-        //TODO KWKPARSER RESET;
+        powerInputTypeRepository.saveAll(kwkParser.getPowerInputType());
+        districtRepository.saveAll(kwkParser.getDistricts());
+        powerInputRepository.saveAll(kwkParser.getPowerInputs());
+        return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.CREATED)).build();
     }
 
 

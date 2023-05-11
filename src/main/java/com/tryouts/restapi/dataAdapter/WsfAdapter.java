@@ -1,4 +1,4 @@
-package com.tryouts.restapi.dataApi;
+package com.tryouts.restapi.dataAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

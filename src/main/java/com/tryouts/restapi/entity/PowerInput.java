@@ -1,11 +1,13 @@
-package com.tryouts.restapi.model;
+package com.tryouts.restapi.entity;
 
 
 import com.tryouts.restapi.controller.Controller;
 import com.tryouts.restapi.controller.PowerInputController;
+import com.tryouts.restapi.entity.exception.NotValid;
 import jakarta.persistence.*;
 
 import java.time.Year;
+import java.util.Objects;
 
 @Entity
 public class PowerInput extends ModelEntity {
@@ -43,6 +45,23 @@ public class PowerInput extends ModelEntity {
         return PowerInputController.class;
     }
 
+    @Override
+    public void validate() throws NotValid {
+        if (powerInput == null) {
+            throw new NotValid("Missing value: powerInput", this);
+        }
+        if (yearOfData == null) {
+            throw new NotValid("Missing value: yearOfData", this);
+        }
+        if (powerInputType == null) {
+            throw new NotValid("Missing value: powerInputType", this);
+        }
+        if (district == null) {
+            throw new NotValid("Missing value: district", this);
+        }
+
+    }
+
     public Double getPowerinput() {
         return powerInput;
     }
@@ -58,6 +77,7 @@ public class PowerInput extends ModelEntity {
     public void setYearOfData(Year year) {
         this.yearOfData = year;
     }
+
 
     public Double getPowerInput() {
         return powerInput;
@@ -97,5 +117,16 @@ public class PowerInput extends ModelEntity {
         return "allPowerInputs";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PowerInput that = (PowerInput) o;
+        return wholeCity == that.wholeCity && Objects.equals(id, that.id) && Objects.equals(powerInput, that.powerInput) && Objects.equals(yearOfData, that.yearOfData) && Objects.equals(powerInputType, that.powerInputType) && Objects.equals(district, that.district);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, powerInput, yearOfData, wholeCity, powerInputType, district);
+    }
 }

@@ -1,6 +1,6 @@
 package com.tryouts.restapi.parser;
 
-import com.tryouts.restapi.dataApi.WsfAdapter;
+import com.tryouts.restapi.dataAdapter.WsfAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;

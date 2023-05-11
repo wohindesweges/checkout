@@ -1,8 +1,9 @@
-package com.tryouts.restapi.model;
+package com.tryouts.restapi.entity;
 
 
 import com.tryouts.restapi.controller.Controller;
 import com.tryouts.restapi.controller.DistrictController;
+import com.tryouts.restapi.entity.exception.NotValid;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -37,6 +38,13 @@ public class District extends ModelEntity {
     @Override
     public Class<? extends Controller> getController() {
         return DistrictController.class;
+    }
+
+    @Override
+    public void validate() throws NotValid {
+        if (name == null) {
+            throw new NotValid("Missing value: name", this);
+        }
     }
 
     public String getName() {

@@ -1,6 +1,6 @@
 package com.tryouts.restapi.config;
 
-import com.tryouts.restapi.model.District;
+import com.tryouts.restapi.entity.District;
 import com.tryouts.restapi.processor.PowerInputTypeProcessor;
 import com.tryouts.restapi.repo.DistrictRepository;
 import org.slf4j.Logger;
@@ -13,10 +13,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InitDB {
     private static final Logger LOG = LoggerFactory.getLogger(InitDB.class);
+
     @Bean
     PowerInputTypeProcessor paymentProcessor() {
         return new PowerInputTypeProcessor();
     }
+
     @Bean
     CommandLineRunner initDatabase(@Qualifier("small") DistrictRepository repository) {
 

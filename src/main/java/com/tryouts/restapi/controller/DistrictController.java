@@ -1,21 +1,21 @@
 package com.tryouts.restapi.controller;
 
-import com.tryouts.restapi.model.District;
+import com.tryouts.restapi.entity.District;
 import com.tryouts.restapi.processor.assembler.DistrictAssembler;
 import com.tryouts.restapi.repo.DistrictRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DistrictController extends Controller<District, DistrictRepository, DistrictAssembler> {
+    private static final String pathRoot = "district";
 
-    public DistrictController(@Qualifier("small") DistrictRepository districtRepositoryRepo, DistrictAssembler districtAssembler) {
-        this.repository = districtRepositoryRepo;
-        this.assembler = districtAssembler;
+    public DistrictController(@Qualifier("small") DistrictRepository repository, DistrictAssembler assembler) {
+        this.repository = repository;
+        this.assembler = assembler;
     }
 
     /* example
@@ -31,7 +31,7 @@ public class DistrictController extends Controller<District, DistrictRepository,
         return CollectionModel.of(employees, linkTo(methodOn(DistrictController.class).all()).withSelfRel());
     }
     */
-    @GetMapping("/districts")
+    @GetMapping("/" + pathRoot)
     @Override
     public CollectionModel<EntityModel<District>> all() {
         return super.all();
@@ -48,11 +48,21 @@ public class DistrictController extends Controller<District, DistrictRepository,
                 linkTo(methodOn(DistrictController.class).all()).withRel("district"));
     }
      */
-    @GetMapping("/district/{id}")
+    @GetMapping("/" + pathRoot + "/{id}")
     @Override
     public EntityModel<District> findByID(@PathVariable Long id) {
         return super.findByID(id);
     }
 
+    @Override
+    @PostMapping("/" + pathRoot)
+    public EntityModel<District> put(@RequestBody District newDistrict) {
+        return super.put(newDistrict);
+    }
 
+    @Override
+    @DeleteMapping("/" + pathRoot)
+    public ResponseEntity<?> delete(Long id) {
+        return super.delete(id);
+    }
 }

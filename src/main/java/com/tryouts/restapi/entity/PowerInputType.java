@@ -1,7 +1,8 @@
-package com.tryouts.restapi.model;
+package com.tryouts.restapi.entity;
 
 import com.tryouts.restapi.controller.Controller;
 import com.tryouts.restapi.controller.PowerInputTypeController;
+import com.tryouts.restapi.entity.exception.NotValid;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,18 +28,6 @@ public class PowerInputType extends ModelEntity {
 
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PowerInputType that = (PowerInputType) o;
-        return Objects.equals(term, that.term);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(term);
-    }
 
     @Override
     public String getAllRelationDiscription() {
@@ -58,6 +47,13 @@ public class PowerInputType extends ModelEntity {
         return PowerInputTypeController.class;
     }
 
+    @Override
+    public void validate() throws NotValid {
+        if (term == null) {
+            throw new NotValid("Missing value: term", this);
+        }
+    }
+
     public String getTerm() {
         return term;
     }
@@ -72,5 +68,18 @@ public class PowerInputType extends ModelEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PowerInputType that = (PowerInputType) o;
+        return Objects.equals(id, that.id) && Objects.equals(term, that.term) && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, term, description);
     }
 }

@@ -1,6 +1,6 @@
 package com.tryouts.restapi.repo;
 
-import com.tryouts.restapi.model.District;
+import com.tryouts.restapi.entity.District;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,9 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +33,7 @@ public class DistrictRepositoryExtended implements DistrictRepository {
     }
 
     public void flush() {
-entityManager.flush();
+        entityManager.flush();
     }
 
     public <S extends District> S saveAndFlush(S entity) {

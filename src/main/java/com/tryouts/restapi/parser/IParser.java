@@ -6,5 +6,6 @@ public interface IParser {
 
     void parse();
 
-    void saveData();
+
+    void clearData();
 }
