@@ -9,6 +9,8 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class ModelEntity {
     Long oldId;
 
+	Long newId;
+
 
     @JsonIgnore
     public abstract String getAllRelationDiscription();
@@ -27,5 +29,12 @@ public abstract class ModelEntity {
     public abstract Class<? extends Controller> getController();
 
     public abstract void validate() throws NotValid;
-    
+
+	public void setNewId(Long newID) {
+		this.newId = newID;
+	}
+
+	public Long getNewId() {
+		return newId;
+	}
 }

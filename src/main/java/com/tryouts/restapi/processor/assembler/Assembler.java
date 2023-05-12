@@ -18,11 +18,16 @@ public interface Assembler<E extends ModelEntity> extends RepresentationModelAss
     @Override
     default EntityModel<E> toModel(@Nonnull E modelEntity) {
         ArrayList<Link> links = new ArrayList<>();
-        links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getId())).withSelfRel());
-        links.add(linkTo(methodOn(modelEntity.getController()).all()).withRel(modelEntity.getAllRelationDiscription()));
-        if (modelEntity.getOldId() != null) {
-            links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getOldId())).withRel("IDLastVersion"));
-        }
-        return EntityModel.of(modelEntity, links);
+		if(modelEntity.getId()!=null){
+			links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getId())).withSelfRel());
+		}
+		if (modelEntity.getOldId() != null) {
+			links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getOldId())).withRel("lastVersion"));
+		}
+		if (modelEntity.getNewId() != null) {
+			links.add(linkTo(methodOn(modelEntity.getController()).findByID(modelEntity.getNewId())).withRel("nextVersion"));
+		}
+		links.add(linkTo(methodOn(modelEntity.getController()).all()).withRel(modelEntity.getAllRelationDiscription()));
+		return EntityModel.of(modelEntity, links);
     }
 }

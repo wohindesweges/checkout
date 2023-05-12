@@ -15,9 +15,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
-//@ExtendWith(MockitoExtension.class)
 @ExtendWith(MockitoExtension.class)
 class KWKParserTest {
     Logger LOG = LogManager.getLogger(KWKParser.class);
@@ -33,8 +30,7 @@ class KWKParserTest {
         Mockito.when(wsfAdapter.getData()).thenReturn(readTestXML());
         kwkParser.readInput();
         kwkParser.parse();
-        kwkParser.getDistricts();
-        Assertions.assertTrue(true);
+        Assertions.assertEquals(12, kwkParser.getDistricts().size());
     }
 
     private byte[] readTestXML() {

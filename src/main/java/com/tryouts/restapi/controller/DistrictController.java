@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class DistrictController extends Controller<District, DistrictRepository, DistrictAssembler> {
     private static final String pathRoot = "district";
 
-    public DistrictController(@Qualifier("small") DistrictRepository repository, DistrictAssembler assembler) {
+    public DistrictController( DistrictRepository repository, DistrictAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
@@ -37,7 +37,6 @@ public class DistrictController extends Controller<District, DistrictRepository,
         return super.all();
     }
 
-
     /*
     @GetMapping("/district/{id}")
     @Override
@@ -53,6 +52,10 @@ public class DistrictController extends Controller<District, DistrictRepository,
     public EntityModel<District> findByID(@PathVariable Long id) {
         return super.findByID(id);
     }
+	@GetMapping("/" + pathRoot + "/{id}/newest")
+	public EntityModel<District> findByIDNewest(@PathVariable Long id) {
+		return super.findNewestByID(id);
+	}
 
     @Override
     @PostMapping("/" + pathRoot)
