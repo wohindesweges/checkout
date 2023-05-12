@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Config {
-    private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
 	@Bean
-    PowerInputTypeProcessor paymentProcessor() {
+    PowerInputTypeProcessor powerInputTypeProcessor() {
         return new PowerInputTypeProcessor();
     }
 
