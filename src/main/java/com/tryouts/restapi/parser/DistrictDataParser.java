@@ -18,6 +18,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Year;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,22 +28,20 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Controller
-public class KWKParser implements IParser {
+public class DistrictDataParser implements IParser {
 
-    Logger LOG = LogManager.getLogger(KWKParser.class);
-    WsfAdapter dataAdapter;
-    private Document doc;
+    protected WsfAdapter dataAdapter;
+    protected Document doc;
+    protected District currentDistrict;
+    protected LinkedList<PowerInput> powerInputs;
+    protected HashSet<District> districts;
+    Logger LOG = LogManager.getLogger(DistrictDataParser.class);
+    private URI uri;
+    private PowerInputType powerInputType;
 
-    private PowerInputType powerInputType = new PowerInputType("Kraft-Wärme-Kopplung");
-    private District currentDistrict;
-
-    private LinkedList<PowerInput> powerInputs;
-
-
-    private HashSet<District> districts;
 
     @Autowired
-    public KWKParser(WsfAdapter dataAdapter) {
+    public DistrictDataParser(WsfAdapter dataAdapter) {
         this.dataAdapter = dataAdapter;
 
     }
@@ -51,16 +51,25 @@ public class KWKParser implements IParser {
                 .mapToObj(nodeList::item);
     }
 
+    public URI getUri() {
+        return uri;
+    }
+
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
+
     @Override
     public void readInput() {
         districts = new HashSet<>();
         powerInputs = new LinkedList<>();
-        byte[] input = dataAdapter.getData();
         try {
+            dataAdapter.setUri(uri);
+            byte[] input = dataAdapter.getData();
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             doc = builder.parse(new ByteArrayInputStream(input));
             doc.getDocumentElement().normalize();
-        } catch (IOException | SAXException | ParserConfigurationException e) {
+        } catch (IOException | SAXException | ParserConfigurationException | URISyntaxException e) {
             LOG.error(e.getMessage(), e);
         }
     }
@@ -93,7 +102,6 @@ public class KWKParser implements IParser {
         districts = new HashSet<>();
     }
 
-
     private void parseYearPowerInput(Node node1) {
         String yearSubstring = node1.getNodeName().substring(5, node1.getNodeName().length() - 1);
         String nodeValue = node1.getFirstChild().getNodeValue();
@@ -121,5 +129,9 @@ public class KWKParser implements IParser {
 
     public List<PowerInputType> getPowerInputType() {
         return List.of(powerInputType);
+    }
+
+    public void setPowerInputType(PowerInputType powerInputType) {
+        this.powerInputType = powerInputType;
     }
 }

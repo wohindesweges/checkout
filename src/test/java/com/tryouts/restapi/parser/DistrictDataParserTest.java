@@ -14,23 +14,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 
 @ExtendWith(MockitoExtension.class)
-class KWKParserTest {
-    Logger LOG = LogManager.getLogger(KWKParser.class);
+class DistrictDataParserTest {
+    Logger LOG = LogManager.getLogger(DistrictDataParser.class);
     @Mock
     WsfAdapter wsfAdapter;
 
     @InjectMocks
-    KWKParser kwkParser;
+    DistrictDataParser districtDataParser;
 
 
     @Test
-    public void readFullXML() {
+    public void readFullXML() throws URISyntaxException {
         Mockito.when(wsfAdapter.getData()).thenReturn(readTestXML());
-        kwkParser.readInput();
-        kwkParser.parse();
-        Assertions.assertEquals(12, kwkParser.getDistricts().size());
+        districtDataParser.readInput();
+        districtDataParser.parse();
+        Assertions.assertEquals(12, districtDataParser.getDistricts().size());
     }
 
     private byte[] readTestXML() {
