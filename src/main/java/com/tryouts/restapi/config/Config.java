@@ -1,15 +1,13 @@
 package com.tryouts.restapi.config;
 
-import com.tryouts.restapi.processor.PowerInputTypeProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.tryouts.restapi.representation.PowerInputTypeProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Config {
 
-	@Bean
+    @Bean
     PowerInputTypeProcessor powerInputTypeProcessor() {
         return new PowerInputTypeProcessor();
     }

@@ -1,9 +1,9 @@
 package com.tryouts.restapi.controller;
 
 import com.tryouts.restapi.parser.KWKParser;
-import com.tryouts.restapi.repo.DistrictRepository;
-import com.tryouts.restapi.repo.PowerInputRepository;
-import com.tryouts.restapi.repo.PowerInputTypeRepository;
+import com.tryouts.restapi.repository.DistrictRepository;
+import com.tryouts.restapi.repository.PowerInputRepository;
+import com.tryouts.restapi.repository.PowerInputTypeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;

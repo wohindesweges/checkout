@@ -1,7 +1,6 @@
-package com.tryouts.restapi.repo;
+package com.tryouts.restapi.repository;
 
 import com.tryouts.restapi.entity.PowerInputType;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

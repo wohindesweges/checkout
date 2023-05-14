@@ -1,4 +1,4 @@
-package com.tryouts.restapi.processor.assembler;
+package com.tryouts.restapi.representation.assembler;
 
 import com.tryouts.restapi.entity.District;
 import org.springframework.stereotype.Component;

@@ -1,9 +1,8 @@
 package com.tryouts.restapi.controller;
 
 import com.tryouts.restapi.entity.District;
-import com.tryouts.restapi.processor.assembler.DistrictAssembler;
-import com.tryouts.restapi.repo.DistrictRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.tryouts.restapi.repository.DistrictRepository;
+import com.tryouts.restapi.representation.assembler.DistrictAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class DistrictController extends Controller<District, DistrictRepository, DistrictAssembler> {
     private static final String pathRoot = "district";
 
-    public DistrictController( DistrictRepository repository, DistrictAssembler assembler) {
+    public DistrictController(DistrictRepository repository, DistrictAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
@@ -52,10 +51,11 @@ public class DistrictController extends Controller<District, DistrictRepository,
     public EntityModel<District> findByID(@PathVariable Long id) {
         return super.findByID(id);
     }
-	@GetMapping("/" + pathRoot + "/{id}/newest")
-	public EntityModel<District> findByIDNewest(@PathVariable Long id) {
-		return super.findNewestByID(id);
-	}
+
+    @GetMapping("/" + pathRoot + "/{id}/newest")
+    public EntityModel<District> findByIDNewest(@PathVariable Long id) {
+        return super.findNewestByID(id);
+    }
 
     @Override
     @PostMapping("/" + pathRoot)

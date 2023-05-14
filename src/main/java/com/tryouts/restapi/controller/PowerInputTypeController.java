@@ -1,8 +1,8 @@
 package com.tryouts.restapi.controller;
 
 import com.tryouts.restapi.entity.PowerInputType;
-import com.tryouts.restapi.processor.assembler.PowerInputTypeAssembler;
-import com.tryouts.restapi.repo.PowerInputTypeRepository;
+import com.tryouts.restapi.repository.PowerInputTypeRepository;
+import com.tryouts.restapi.representation.assembler.PowerInputTypeAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.tryouts.restapi.processor;
+package com.tryouts.restapi.representation;
 
 import com.tryouts.restapi.controller.DistrictController;
 import com.tryouts.restapi.controller.PowerInputTypeController;
