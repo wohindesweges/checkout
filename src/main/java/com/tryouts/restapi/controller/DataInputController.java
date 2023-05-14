@@ -33,7 +33,7 @@ public class DataInputController {
         this.powerInputTypeRepository = powerInputTypeRepository;
     }
 
-    @GetMapping("/initKWKData")
+    @GetMapping("/initCogenerationData")
     ResponseEntity<?> collectDataKWK() {
         URI uri;
         try {
@@ -57,7 +57,7 @@ public class DataInputController {
     }
 
 
-    @GetMapping("/initBioData")
+    @GetMapping("/initBiomassData")
     ResponseEntity<?> collectDataBiomasse() {
         URI uri;
         try {
