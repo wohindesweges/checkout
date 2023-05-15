@@ -29,7 +29,7 @@ class DistrictAssemblerTest {
         final long id = 4L;
         district.setId(id);
         final EntityModel<District> districtEntityModel = districtAssembler.toModel(district);
-        final Link selfLink = Link.of("/district" + id, "self");
+        final Link selfLink = Link.of("/district/" + id, "self");
         final Link newLink = Link.of("/district/" + newID, "nextVersion");
         final Link oldLink = Link.of("/district/" + oldId, "lastVersion");
         final Link allLink = Link.of("/district", "allDistricts");
