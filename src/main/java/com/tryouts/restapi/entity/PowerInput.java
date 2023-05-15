@@ -20,10 +20,10 @@ public class PowerInput extends ModelEntity {
     private Year yearOfData;
 
     private boolean wholeCity;
-    @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "powerInputTypeId")
     private PowerInputType powerInputType;
-    @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "districtId")
     private District district;
 
