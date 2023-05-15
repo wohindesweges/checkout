@@ -21,7 +21,7 @@ public class PowerInput extends ModelEntity {
 
     private boolean wholeCity;
     @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
-    @JoinColumn(name = "powerInputId")
+    @JoinColumn(name = "powerInputTypeId")
     private PowerInputType powerInputType;
     @ManyToOne(fetch = FetchType.EAGER)//TODO erklärung
     @JoinColumn(name = "districtId")

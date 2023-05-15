@@ -4,10 +4,12 @@ import com.tryouts.restapi.dataAdapter.WsfAdapter;
 import com.tryouts.restapi.entity.District;
 import com.tryouts.restapi.entity.PowerInput;
 import com.tryouts.restapi.entity.PowerInputType;
+import com.tryouts.restapi.repository.DistrictRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,15 +23,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Year;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Controller
 public class DistrictDataParser implements IParser {
 
+    private final DistrictRepository districtRepository;
     protected WsfAdapter dataAdapter;
     protected Document doc;
     protected District currentDistrict;
@@ -38,17 +39,27 @@ public class DistrictDataParser implements IParser {
     Logger LOG = LogManager.getLogger(DistrictDataParser.class);
     private URI uri;
     private PowerInputType powerInputType;
+    private String districtInputElementName;
 
 
     @Autowired
-    public DistrictDataParser(WsfAdapter dataAdapter) {
+    public DistrictDataParser(WsfAdapter dataAdapter, DistrictRepository districtRepository) {
         this.dataAdapter = dataAdapter;
 
+        this.districtRepository = districtRepository;
     }
 
     private static Stream<Node> getNodeStream(NodeList nodeList) {
         return IntStream.range(0, nodeList.getLength())
                 .mapToObj(nodeList::item);
+    }
+
+    public String getDistrictInputElementName() {
+        return districtInputElementName;
+    }
+
+    public void setDistrictInputElementName(String districtInputElementName) {
+        this.districtInputElementName = districtInputElementName;
     }
 
     public URI getUri() {
@@ -76,7 +87,10 @@ public class DistrictDataParser implements IParser {
 
     @Override
     public void parse() {
-        NodeList nodeList = doc.getElementsByTagName("fis:s_kwk_strom_bez");
+        if (!StringUtils.hasText(districtInputElementName)) {
+            throw new MissingFormatArgumentException("Node declaration missing");
+        }
+        NodeList nodeList = doc.getElementsByTagName("fis:" + districtInputElementName);
         List<Node> bezirksNodes = getNodeStream(nodeList).toList();
 
         for (Node bezirksNode : bezirksNodes) {
@@ -115,8 +129,13 @@ public class DistrictDataParser implements IParser {
 
     private void parseBezirk(Node node1) {
         District district = new District(node1.getFirstChild().getNodeValue());
-        this.currentDistrict = district;
-        districts.add(district);
+        District byName = districtRepository.findByName(district.getName());
+        //TODO MATCHER
+        this.currentDistrict = Objects.requireNonNullElse(byName, district);
+        if (currentDistrict.getId() == null) {
+            districts.add(district);
+        }
+
     }
 
     public LinkedList<PowerInput> getPowerInputs() {

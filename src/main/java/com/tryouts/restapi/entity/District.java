@@ -80,4 +80,6 @@ public class District extends ModelEntity {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+
 }

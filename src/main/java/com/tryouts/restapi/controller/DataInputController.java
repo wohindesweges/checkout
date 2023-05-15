@@ -1,5 +1,6 @@
 package com.tryouts.restapi.controller;
 
+import com.tryouts.restapi.entity.District;
 import com.tryouts.restapi.entity.PowerInputType;
 import com.tryouts.restapi.parser.DistrictDataParser;
 import com.tryouts.restapi.repository.DistrictRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 
 @RestController
 public class DataInputController {
@@ -41,16 +43,18 @@ public class DataInputController {
         } catch (URISyntaxException e) {
             return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)).build();
         }
-        return getResponse(uri, "Cogeneration-Heat");
+        return collectDataForType(uri, "Cogeneration-Heat", "s_kwk_strom_bez");
     }
 
-    private ResponseEntity<?> getResponse(URI uri, String typeName) {
+    private ResponseEntity<?> collectDataForType(URI uri, String typeName, String districtInputElementName) {
         districtDataParser.setUri(uri);
         districtDataParser.setPowerInputType(new PowerInputType(typeName));
+        districtDataParser.setDistrictInputElementName(districtInputElementName);
         districtDataParser.readInput();
         districtDataParser.parse();
         powerInputTypeRepository.saveAll(districtDataParser.getPowerInputType());
-        districtRepository.saveAll(districtDataParser.getDistricts());
+        HashSet<District> districts = districtDataParser.getDistricts();
+        districtRepository.saveAll(districts);
         powerInputRepository.saveAll(districtDataParser.getPowerInputs());
         districtDataParser.clearData();
         return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.CREATED)).build();
@@ -61,11 +65,11 @@ public class DataInputController {
     ResponseEntity<?> collectDataBiomasse() {
         URI uri;
         try {
-            uri = new URI("https", "fbinter.stadt-berlin.de", "/fb/wfs/data/senstadt/s_biom_einspstrom", "version=2.0.0&typenames=s_biom_einspstrom_bez&request=getfeature&service=wfs", "");
+            uri = new URI("https", "fbinter.stadt-berlin.de", "/fb/wfs/data/senstadt/s_biom_einspstrom", "version=2.0.0&typenames=s_biom_einspstrom&request=getfeature&service=wfs", "");
         } catch (URISyntaxException e) {
             return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)).build();
         }
-        return getResponse(uri, "biomass");
+        return collectDataForType(uri, "biomass", "s_biom_einspstrom");
     }
 
 

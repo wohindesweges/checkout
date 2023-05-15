@@ -8,6 +8,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Year;
+
 @RestController
 public class PowerInputController extends Controller<PowerInput, PowerInputRepository, PowerInputAssembler> {
     private static final String pathRoot = "powerInput";
@@ -40,4 +42,12 @@ public class PowerInputController extends Controller<PowerInput, PowerInputRepos
     public ResponseEntity<?> delete(Long id) {
         return super.delete(id);
     }
+
+
+    @GetMapping("/" + pathRoot + "/{id}/{year}")
+    public CollectionModel<EntityModel<PowerInput>> findForYear(@PathVariable Long id, @PathVariable Year year) {
+        return assembler.toCollectionModel(repository.findForYearAndDistrict(id, year));
+    }
+
+
 }
