@@ -23,7 +23,7 @@ public class ExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(NotValid.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String newEntiyNotValid(NotValid ex) {
+    String newEntityNotValid(NotValid ex) {
         return ex.getEntity().getClass().getSimpleName() + ": " + ex.getMessage();
     }
 }
