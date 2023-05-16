@@ -48,6 +48,7 @@ public class District extends ModelEntity {
         }
     }
 
+
     public String getName() {
         return name;
     }

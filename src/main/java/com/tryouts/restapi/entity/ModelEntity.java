@@ -9,7 +9,7 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class ModelEntity {
     Long oldId;
 
-	Long newId;
+    Long newId;
 
 
     @JsonIgnore
@@ -30,11 +30,12 @@ public abstract class ModelEntity {
 
     public abstract void validate() throws NotValid;
 
-	public void setNewId(Long newID) {
-		this.newId = newID;
-	}
+    public Long getNewId() {
+        return newId;
+    }
 
-	public Long getNewId() {
-		return newId;
-	}
+    public void setNewId(Long newID) {
+        this.newId = newID;
+    }
+
 }

@@ -51,8 +51,6 @@ public abstract class Controller<E extends ModelEntity, R extends JpaRepository<
     public EntityModel<E> put(@RequestBody E newModelEntity) throws NotValid {
         E savedModelEntity = null;
         newModelEntity.validate();
-        //FIXME --> implementation of example+matcher missing to match by specific values to avoid duplicates
-        // --> error during findAll()
         List<E> allEntities = repository.findAll(Example.of(newModelEntity), Sort.by(Sort.Direction.DESC, "id"));
         E existingModelEntity = null;
         if (!allEntities.isEmpty()) {

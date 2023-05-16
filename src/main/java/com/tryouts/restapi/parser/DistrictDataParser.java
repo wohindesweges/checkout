@@ -8,6 +8,8 @@ import com.tryouts.restapi.repository.DistrictRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
@@ -129,8 +131,7 @@ public class DistrictDataParser implements IParser {
 
     private void parseBezirk(Node node1) {
         District district = new District(node1.getFirstChild().getNodeValue());
-        District byName = districtRepository.findByName(district.getName());
-        //TODO MATCHER
+        District byName = districtRepository.findAll(Example.of(district, ExampleMatcher.matchingAny())).get(0);
         this.currentDistrict = Objects.requireNonNullElse(byName, district);
         if (currentDistrict.getId() == null) {
             districts.add(district);
