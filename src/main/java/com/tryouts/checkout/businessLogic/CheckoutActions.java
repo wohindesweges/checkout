@@ -1,5 +1,6 @@
 package com.tryouts.checkout.businessLogic;
 
+import com.tryouts.checkout.businessLogic.discounts.ItemCountDiscount;
 import com.tryouts.checkout.entity.PricingRule;
 import com.tryouts.checkout.entity.StockItem;
 import com.tryouts.checkout.repository.PricingRuleRepository;
@@ -29,13 +30,6 @@ public class CheckoutActions {
         this.stockItemRepository = stockItemRepository;
     }
 
-    private static double getSumForItemCountDiscount(double sum, PricingRule pricingRule, int itemCount) {
-        double matchedThresholds = Math.floor((double) itemCount / pricingRule.getThreshold());
-        double openItems = itemCount % pricingRule.getThreshold();
-        sum = sum + (matchedThresholds * pricingRule.getSpecialPrice());
-        sum = sum + openItems * pricingRule.getPrice();
-        return sum;
-    }
 
     public void scanItem(String item) {
         items.add(item);
@@ -52,12 +46,12 @@ public class CheckoutActions {
     public double getPriceForItems(String itemNames) {
         String[] singleItems = itemNames.split("");
         double sum = 0.0d;
-        Map<String, String> itemCountByName = Arrays.stream(singleItems).filter(StringUtils::hasText)
+        Map<String, String> itemGroups = Arrays.stream(singleItems).filter(StringUtils::hasText)
                 .collect(Collectors.groupingBy(s -> s, Collectors.joining()));
-        for (String name : itemCountByName.keySet()) {
+        for (String name : itemGroups.keySet()) {
             final Optional<StockItem> stockItemById = this.stockItemRepository.findByName(name);
             if (stockItemById.isPresent()) {
-                sum = sum + getPriceForItem(itemCountByName, stockItemById.get());
+                sum = sum + getPriceForItemGroup(itemGroups, stockItemById.get());
             } else {
                 LOG.error("Found no item found for: " + name);
             }
@@ -65,7 +59,7 @@ public class CheckoutActions {
         return Math.round(sum * 100) / 100.0;
     }
 
-    private double getPriceForItem(Map<String, String> itemCountByName, StockItem stockItem) {
+    private double getPriceForItemGroup(Map<String, String> itemCountByName, StockItem stockItem) {
         double sum = 0.0d;
         Optional<PricingRule> pricingRuleOptional = pricingRuleRepository.findForStockItem(stockItem);
         if (pricingRuleOptional.isPresent()) {
@@ -73,7 +67,7 @@ public class CheckoutActions {
             int itemCount = itemCountByName.get(stockItem.getName()).length();
             if (pricingRule.getSpecialPrice() != null) {
                 //todo implement different DiscountTypes
-                sum = getSumForItemCountDiscount(sum, pricingRule, itemCount);
+                sum = new ItemCountDiscount().getSumForItemCountDiscount(sum, pricingRule, itemCount);
             } else {
                 sum = sum + itemCount * pricingRule.getPrice();
             }
