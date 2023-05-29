@@ -76,6 +76,7 @@ public class CheckoutActions {
             PricingRule pricingRule = pricingRuleOptional.get();
             int itemCount = itemCountByName.get(stockItem.getName()).length();
             if (pricingRule.getSpecialPrice() != null) {
+                //todo implement different DiscountTypes
                 sum = getSumForItemCountDiscount(sum, pricingRule, itemCount);
             } else {
                 sum = sum + itemCount * pricingRule.getPrice();
