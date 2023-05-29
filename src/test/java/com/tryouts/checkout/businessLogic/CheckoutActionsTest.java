@@ -16,36 +16,84 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class CheckoutActionsTest {
+    private final PricingRule pricingRuleA = new PricingRule().setPrice(50d).setThreshold(3).setSpecialPrice(130d);
+    private final PricingRule pricingRuleB = new PricingRule().setPrice(30d).setThreshold(2).setSpecialPrice(45d);
+    private final PricingRule pricingRuleC = new PricingRule().setPrice(20d);
+    private final PricingRule pricingRuleD = new PricingRule().setPrice(15d);
+    private final StockItem stockItemA = new StockItem().setName("A").setId(1L);
+    private final StockItem stockItemB = new StockItem().setName("B").setId(2L);
+    private final StockItem stockItemC = new StockItem().setName("C").setId(3L);
+    private final StockItem stockItemD = new StockItem().setName("D").setId(4L);
+    @InjectMocks
 
-    private final PricingRule singlePricingRule = new PricingRule().setPrice(10.5d);
-    private final PricingRule specialPriceFor3 = new PricingRule().setPrice(10.5d).setSpecialPrice(15d).setThreshold(3);
+    CheckoutActions checkoutActions;
     @Mock
+
     PricingRuleRepository pricingRuleRepository;
     @Mock
+
     StockItemRepository stockItemRepository;
-    @InjectMocks
-    CheckoutActions checkoutActions;
-    private StockItem stockItemA = new StockItem().setName("A").setId(1L);
 
 
     @Test
-    void getPriceForThreeItems() {
+    void getPriceForTwoItems() {
         Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA));
-        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(singlePricingRule));
-        String items = "AAA";
-        String[] split = items.split("");
-        double priceForItems = checkoutActions.getPriceForItems(split);
-        Assertions.assertEquals(31.5d, priceForItems);
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(pricingRuleA));
+        double priceForItems = checkoutActions.getPriceForItems("AA");
+        Assertions.assertEquals(100d, priceForItems);
+        checkoutActions.finishCheckout();
+
     }
 
     @Test
     void getPriceForItemsSpecialPrice() {
-        stockItemA = new StockItem().setName("A");
-        Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA.setId(1L)));
-        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(specialPriceFor3));
-        String items = "AAA";
-        String[] split = items.split("");
-        double priceForItems = checkoutActions.getPriceForItems(split);
-        Assertions.assertEquals(15d, priceForItems);
+        Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(pricingRuleA));
+        double priceForItems = checkoutActions.getPriceForItems("AAA");
+        Assertions.assertEquals(130d, priceForItems);
+        checkoutActions.finishCheckout();
     }
+
+    @Test
+    void getPriceForItemsSpecialPriceTwice() {
+        Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(pricingRuleA));
+        double priceForItems = checkoutActions.getPriceForItems("AAAAAA");
+        Assertions.assertEquals(260d, priceForItems);
+        checkoutActions.finishCheckout();
+    }
+
+
+    @Test
+    void multipleRules() {
+        Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA));
+        Mockito.when(stockItemRepository.findByName("B")).thenReturn(Optional.of(stockItemB));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(pricingRuleA));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemB)).thenReturn(Optional.of(pricingRuleB));
+        double priceForItems = checkoutActions.getPriceForItems("AAABBB");
+        Assertions.assertEquals(205, priceForItems);
+        checkoutActions.finishCheckout();
+    }
+
+    @Test
+    void scanItemTest() {
+        Mockito.when(stockItemRepository.findByName("A")).thenReturn(Optional.of(stockItemA));
+        Mockito.when(stockItemRepository.findByName("B")).thenReturn(Optional.of(stockItemB));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemA)).thenReturn(Optional.of(pricingRuleA));
+        Mockito.when(pricingRuleRepository.findForStockItem(stockItemB)).thenReturn(Optional.of(pricingRuleB));
+        Assertions.assertEquals(0d, checkoutActions.getCurrentTotal());
+        checkoutActions.scanItem("A");
+        Assertions.assertEquals(50d, checkoutActions.getCurrentTotal());
+        checkoutActions.scanItem("B");
+        Assertions.assertEquals(80d, checkoutActions.getCurrentTotal());
+        checkoutActions.scanItem("A");
+        Assertions.assertEquals(130d, checkoutActions.getCurrentTotal());
+        checkoutActions.scanItem("A");
+        Assertions.assertEquals(160d, checkoutActions.getCurrentTotal());
+        checkoutActions.scanItem("B");
+        Assertions.assertEquals(175d, checkoutActions.getCurrentTotal());
+        checkoutActions.finishCheckout();
+    }
+
+
 }
