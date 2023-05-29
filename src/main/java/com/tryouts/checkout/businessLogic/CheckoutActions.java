@@ -1,6 +1,5 @@
 package com.tryouts.checkout.businessLogic;
 
-import com.tryouts.checkout.dto.PricingRuleDto;
 import com.tryouts.checkout.entity.PricingRule;
 import com.tryouts.checkout.entity.StockItem;
 import com.tryouts.checkout.repository.PricingRuleRepository;
@@ -11,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +39,6 @@ public class CheckoutActions {
 
     public void scanItem(String item) {
         items.add(item);
-    }
-
-    public void setNewPricingRules(List<PricingRuleDto> rule) {
-        List<PricingRule> collect = rule.stream().map(PricingRuleDto::getModelEntity).toList();
-        collect.forEach(PricingRule::validate);//TODO do not stop at first error
-        pricingRuleRepository.saveAll(collect);
     }
 
     public double getCurrentTotal() {
