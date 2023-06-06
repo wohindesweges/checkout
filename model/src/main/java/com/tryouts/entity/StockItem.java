@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+
 @Entity
 public class StockItem extends ModelEntity<StockItemDto> {
 	@Id
@@ -15,12 +17,11 @@ public class StockItem extends ModelEntity<StockItemDto> {
 	Long id;
 	String name;
 
+	String description;
+
 	public StockItem() {
 	}
 
-	public static StockItem empty() {
-		return new StockItem();
-	}
 
 	@Override
 	public Long getId() {
@@ -52,5 +53,36 @@ public class StockItem extends ModelEntity<StockItemDto> {
 	public StockItem setName(String name) {
 		this.name = name;
 		return this;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public StockItem setDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
+	@Override
+	public void updateByDto(StockItemDto dto) {
+		if (StringUtils.hasText(dto.getName())) {
+			this.name = dto.getName();
+		}
+		this.description = dto.getDescription();
+
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		StockItem stockItem = (StockItem) o;
+		return Objects.equals(id, stockItem.id) && Objects.equals(name, stockItem.name) && Objects.equals(description, stockItem.description);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, description);
 	}
 }

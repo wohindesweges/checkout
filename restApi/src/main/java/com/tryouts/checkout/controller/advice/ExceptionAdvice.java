@@ -1,6 +1,9 @@
 package com.tryouts.checkout.controller.advice;
+import com.tryouts.dto.Dto;
 import com.tryouts.entity.exception.NotValid;
+import com.tryouts.repository.exception.EntityAlreadyExsists;
 import com.tryouts.repository.exception.EntityNotFound;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +21,13 @@ public class ExceptionAdvice {
     String entityNotFound(EntityNotFound exception) {
         return  exception.getMessage();
     }
+
+	@ResponseBody
+	@ExceptionHandler(EntityAlreadyExsists.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	EntityModel<? extends Dto<?>> entityAlreadyExists(EntityAlreadyExsists exception) {
+		return  EntityModel.of(exception.getExistsingEntity());
+	}
 
     @ResponseBody
     @ExceptionHandler(NotValid.class)

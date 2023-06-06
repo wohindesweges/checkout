@@ -1,7 +1,7 @@
 package com.tryouts.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tryouts.entity.ModelEntity;
+
 public abstract class Dto<E> {
     Long id;
 
@@ -11,5 +11,5 @@ public abstract class Dto<E> {
 
     public abstract Long getId();
 	@JsonIgnore
-    public abstract E getModelEntity();
+    public abstract E getEntityModel();
 }

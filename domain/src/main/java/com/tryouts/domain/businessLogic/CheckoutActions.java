@@ -1,6 +1,8 @@
 package com.tryouts.domain.businessLogic;
 
+import com.tryouts.domain.businessLogic.discounts.EmptyCountDiscount;
 import com.tryouts.domain.businessLogic.discounts.ItemCountDiscount;
+import com.tryouts.domain.businessLogic.discounts.ItemDiscount;
 import com.tryouts.entity.PricingRule;
 import com.tryouts.entity.StockItem;
 import com.tryouts.repository.jpa.PricingRuleRepository;
@@ -9,10 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,53 +23,62 @@ import java.util.stream.Collectors;
 public class CheckoutActions {
     private final PricingRuleRepository pricingRuleRepository;
     private final StockItemRepository stockItemRepository;
-    private final ArrayList<String> items = new ArrayList<>();
-    Logger LOG = LogManager.getLogger(CheckoutActions.class);
+    private final ArrayList<StockItem> items = new ArrayList<>();
+	private final List<ItemDiscount> itemDiscounts;
+	Logger LOG = LogManager.getLogger(CheckoutActions.class);
 
     @Autowired
-    public CheckoutActions(PricingRuleRepository pricingRuleRepository, StockItemRepository stockItemRepository) {
-        this.pricingRuleRepository = pricingRuleRepository;
+    public CheckoutActions(PricingRuleRepository pricingRuleRepository, StockItemRepository stockItemRepository, List<ItemDiscount> itemDiscounts) {
+		this.itemDiscounts = itemDiscounts;
+		this.pricingRuleRepository = pricingRuleRepository;
         this.stockItemRepository = stockItemRepository;
     }
 
 
     public void scanItem(String item) {
-        items.add(item);
+		final StockItem stockItemByName = stockItemRepository.findByName(item);
+		if(stockItemByName!=null){
+			items.add(stockItemByName);
+		}
     }
 
     public double getCurrentTotal() {
-        return getPriceForItems(String.join("", items));
+        return getPriceForItems( items);
     }
 
-    public void finishCheckout() {
+	public ArrayList<StockItem> getScannedItems() {
+		return items;
+	}
+
+	public void finishCheckout() {
         items.clear();
     }
+	public double getPriceForItems(String itemNames) {
+		Arrays.stream(itemNames.split("")).forEach(this::scanItem);
+		return getPriceForItems(items);
+	}
 
-    public double getPriceForItems(String itemNames) {
-        String[] singleItems = itemNames.split("");
+    public double getPriceForItems(List<StockItem> itemNames) {
         double sum = 0.0d;
-        Map<String, String> itemGroups = Arrays.stream(singleItems).filter(StringUtils::hasText)
-                .collect(Collectors.groupingBy(s -> s, Collectors.joining()));
+        Map<String, List<StockItem>> itemGroups = itemNames.stream().collect(Collectors.groupingBy(StockItem::getName,Collectors.toList()));
         for (String name : itemGroups.keySet()) {
-            final StockItem stockItemByName = this.stockItemRepository.findByName(name);
-            if (stockItemByName!=null) {
-                sum = sum + getPriceForItemGroup(itemGroups, stockItemByName);
-            } else {
-                LOG.error("Found no item found for: " + name);
-            }
+			if(itemGroups.get(name).size()>0){
+				sum = sum + getPriceForItemGroup(itemGroups.get(name));
+			}
         }
         return Math.round(sum * 100) / 100.0;
     }
 
-    private double getPriceForItemGroup(Map<String, String> itemCountByName, StockItem stockItem) {
+    private double getPriceForItemGroup(List<StockItem> stockItems) {
         double sum = 0.0d;
-        Optional<PricingRule> pricingRuleOptional =  this.pricingRuleRepository.findForStockItem(stockItem);
+		final StockItem stockItem = stockItems.get(0);
+		Optional<PricingRule> pricingRuleOptional =  this.pricingRuleRepository.findForStockItem(stockItem);
         if (pricingRuleOptional.isPresent()) {
             PricingRule pricingRule = pricingRuleOptional.get();
-            int itemCount = itemCountByName.get(stockItem.getName()).length();
+            int itemCount = stockItems.size();
             if (pricingRule.getSpecialPrice() != null) {
-                //todo implement different DiscountTypes
-                sum = new ItemCountDiscount().getSumForItemCountDiscount(sum, pricingRule, itemCount);
+//				stockItem.getDiscountType();
+                sum =getDiscountByType(1).calculateItemDiscount(sum, pricingRule, itemCount);
             } else {
                 sum = sum + itemCount * pricingRule.getPrice();
             }
@@ -76,5 +87,14 @@ public class CheckoutActions {
         }
         return sum;
     }
+
+	private ItemDiscount getDiscountByType( int discountType ) {
+		for (ItemDiscount itemDiscount : itemDiscounts) {
+			if (itemDiscount.getType()==discountType) {
+				return itemDiscount;
+			}
+		}
+		return new EmptyCountDiscount();
+	}
 
 }

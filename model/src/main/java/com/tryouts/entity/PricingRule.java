@@ -1,8 +1,11 @@
 package com.tryouts.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tryouts.dto.PricingRuleDto;
 import com.tryouts.entity.exception.NotValid;
 import jakarta.persistence.*;
+
+import java.util.Objects;
 
 @Entity
 public class PricingRule extends ModelEntity<PricingRuleDto> {
@@ -12,9 +15,11 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
     int threshold;
     Double specialPrice;
     double price;
+	int discountType;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stockItemId")
-    private StockItem stockItem;
+    @JoinColumn(name = "stockItemId", referencedColumnName = "id")
+    private StockItem stockItemId;
 
     @Override
     public Long getId() {
@@ -28,15 +33,41 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
 
     @Override
     public void validate() throws NotValid {
-        //todo price > 0
+        if(price<=0){
+			throw new NotValid("Price must be greater than 0", this);
+		}
+		if(stockItemId ==null){
+			throw new NotValid("Related Stockitem must be set", this);
+		}
+		if(stockItemId.getId()==null){
+			throw new NotValid("Related Stockitem is unkown", this);
+		}
     }
 
     @Override
     public PricingRuleDto getDto() {
-        return new PricingRuleDto();
-    }//TODO
+        return new PricingRuleDto()//
+				.setPrice(this.price)//
+				.setThreshold(this.threshold)
+				.setStockItem(this.stockItemId)
+				.setSpecialPrice(this.specialPrice)
+				.setID(this.id);
+    }
 
-    public int getThreshold() {
+	@Override
+	public void updateByDto(PricingRuleDto dto) {
+		if(dto.getPrice()>0){
+			this.price=dto.getPrice();
+		}
+		this.specialPrice=dto.getSpecialPrice();
+		if(dto.getStockItem()!=null){
+			this.stockItemId =dto.getStockItem();
+		}
+		this.threshold=dto.getThreshold();
+
+	}
+
+	public int getThreshold() {
         return threshold;
     }
 
@@ -49,22 +80,17 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
         return specialPrice;
     }
 
-    public PricingRule setSpecialPrice(double specialPriceForThreshold) {
+    public PricingRule setSpecialPrice(Double specialPriceForThreshold) {
         this.specialPrice = specialPriceForThreshold;
         return this;
     }
 
-    public PricingRule setSpecialPrice(Double specialPrice) {
-        this.specialPrice = specialPrice;
-        return this;
+    public StockItem getStockItemId() {
+        return stockItemId;
     }
 
-    public StockItem getStockItem() {
-        return stockItem;
-    }
-
-    public PricingRule setStockItem(StockItem stockItem) {
-        this.stockItem = stockItem;
+    public PricingRule setStockItemId(StockItem stockItem) {
+        this.stockItemId = stockItem;
         return this;
     }
 
@@ -76,4 +102,27 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
         this.price = price;
         return this;
     }
+
+	public int getDiscountType() {
+		return discountType;
+	}
+
+	public PricingRule setDiscountType(int discountType) {
+		this.discountType = discountType;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PricingRule that = (PricingRule) o;
+		return threshold == that.threshold && Double.compare(that.price, price) == 0  && Objects.equals(specialPrice, that.specialPrice) && Objects.equals(
+				stockItemId, that.stockItemId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, threshold, specialPrice, price, stockItemId);
+	}
 }

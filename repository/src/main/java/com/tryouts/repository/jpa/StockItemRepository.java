@@ -17,5 +17,7 @@ public interface StockItemRepository extends JpaRepository<StockItem, Long> {
 
 	StockItem findByName(String name);
 
+
+
 }
 

@@ -5,7 +5,7 @@ import com.tryouts.entity.StockItem;
 public class StockItemDto extends Dto<StockItem> {
 
     String name;
-
+	String description;
 
     @Override
     public String getAllRelationDiscription() {
@@ -23,7 +23,7 @@ public class StockItemDto extends Dto<StockItem> {
     }
 
     @Override
-    public StockItem getModelEntity() {
+    public StockItem getEntityModel() {
         return new StockItem().setName(this.name);
     }
 
@@ -35,4 +35,13 @@ public class StockItemDto extends Dto<StockItem> {
         this.name = name;
         return this;
     }
+
+	public String getDescription() {
+		return description;
+	}
+
+	public StockItemDto setDescription(String description) {
+		this.description = description;
+		return this;
+	}
 }

@@ -1,19 +1,14 @@
 package com.tryouts.checkout.controller;
 
-import ch.qos.logback.classic.encoder.JsonEncoder;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.tryouts.checkout.representation.assembler.StockItemAssembler;
 import com.tryouts.domain.businessLogic.StockItemActions;
 import com.tryouts.dto.StockItemDto;
 import com.tryouts.entity.StockItem;
 import com.tryouts.entity.exception.NotValid;
+import com.tryouts.repository.exception.EntityAlreadyExsists;
 import com.tryouts.repository.jpa.StockItemRepository;
 import com.tryouts.repository.exception.EntityNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -24,7 +19,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -48,15 +45,32 @@ public class StockItemController  {
 		return stockItemAssembler.toModel(entityModel.getDto());
     }
 
+	@GetMapping("/" + pathRoot + "/")
+	public EntityModel<StockItemDto> findByName(@RequestParam(value="name") String name) {
+		StockItem byName = repository.findByName(name);
+		return stockItemAssembler.toModel(byName.getDto());
+	}
+
     @GetMapping("/" + pathRoot)
     public CollectionModel<EntityModel<StockItemDto>> all() {
-		return	stockItemAssembler.toCollectionModel(repository.findAll().stream().map(StockItem::getDto).toList());
+		return stockItemAssembler.toCollectionModel(repository.findAll().stream().map(StockItem::getDto).toList());
     }
 
     @PostMapping("/" + pathRoot)
-    public EntityModel<StockItemDto> put(@RequestBody StockItemDto dto) throws NotValid, JsonProcessingException {
-		return EntityModel.of(stockItemActions.addStockItem(dto));
+    public ResponseEntity<?> post(@RequestBody StockItemDto dto) throws NotValid {
+		try{
+			final StockItemDto stockItemDto = stockItemActions.addStockItem(dto);
+			return new ResponseEntity<>(stockItemDto, HttpStatus.OK);
+		}catch (EntityAlreadyExsists entityAlreadyExsists){
+			return new ResponseEntity<>(entityAlreadyExsists.getExistsingEntity(), HttpStatus.CONFLICT);
+		}
     }
+
+	@PutMapping("/" + pathRoot)
+	public ResponseEntity<?> put(@RequestBody StockItemDto dto) throws NotValid {
+			final StockItemDto stockItemDto = stockItemActions.saveOrUpdate(dto);
+			return new ResponseEntity<>(stockItemDto, HttpStatus.OK);
+	}
 
     @DeleteMapping("/" + pathRoot + "/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -68,9 +82,5 @@ public class StockItemController  {
     }
 
 
-    @GetMapping("/" + pathRoot + "/{name}")
-    public EntityModel<StockItemDto> findByName(@PathVariable String name) {
-        StockItem byName = repository.findByName(name);
-        return stockItemAssembler.toModel(byName.getDto());
-    }
+
 }
