@@ -13,29 +13,29 @@ import java.util.Optional;
 @Service
 public class PricingActions {
     private final PricingRuleRepository pricingRuleRepository;
-	private final StockItemRepository stockItemRepository;
+    private final StockItemRepository stockItemRepository;
 
-	@Autowired
+    @Autowired
     public PricingActions(PricingRuleRepository pricingRuleRepository, StockItemRepository stockItemRepository) {
-		this.stockItemRepository = stockItemRepository;
+        this.stockItemRepository = stockItemRepository;
 
-		this.pricingRuleRepository = pricingRuleRepository;
+        this.pricingRuleRepository = pricingRuleRepository;
     }
 
     public PricingRuleDto setNewPricingRule(PricingRuleDto rule) {
-		final StockItem stockItemRepositoryByName = stockItemRepository.findByName(rule.getStockItem().getName());
-		final Optional<PricingRule> pricingForStockItem = pricingRuleRepository.findForStockItem(stockItemRepositoryByName);
-		PricingRule modelEntity;
-		if (pricingForStockItem.isPresent()) {
-			rule.setStockItem(stockItemRepositoryByName);
-			pricingForStockItem.get().updateByDto(rule);
-		}else{
-			modelEntity= rule.getEntityModel();
-			modelEntity.setStockItemId(stockItemRepositoryByName);
-			modelEntity.validate();
-			rule=modelEntity.getDto();
-		}
-        return pricingRuleRepository.savePricing(rule);
+        final StockItem stockItemRepositoryByName = stockItemRepository.findByName(rule.getStockItem().getName());
+        final Optional<PricingRule> pricingForStockItem = pricingRuleRepository.findForStockItem(stockItemRepositoryByName);
+        PricingRule modelEntity;
+        if (pricingForStockItem.isPresent()) {
+            rule.setStockItem(stockItemRepositoryByName);
+            pricingForStockItem.get().updateByDto(rule);
+            modelEntity = pricingForStockItem.get();
+        } else {
+            modelEntity = rule.getEntityModel();
+            modelEntity.setStockItemId(stockItemRepositoryByName);
+            modelEntity.validate();
+        }
+        return pricingRuleRepository.savePricing(modelEntity.getDto());
     }
 
 

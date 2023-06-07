@@ -8,82 +8,84 @@ import jakarta.persistence.ManyToOne;
 
 public class PricingRuleDto extends Dto<PricingRule> {
 
-	int threshold;
-	Double specialPrice;
-	double price;
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "stockItemId")
-	private StockItem stockItem;
-	int discountType;
-	public PricingRuleDto() {
-	}
+    Integer threshold;
+    Double specialPrice;
+    Double price;
+    Integer discountType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "stockItemId")
+    private StockItem stockItem;
 
-	@Override
-	public String getAllRelationDiscription() {
-		return "PricingRules";
-	}
+    public PricingRuleDto() {
+    }
 
-	@Override
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public String getAllRelationDiscription() {
+        return "PricingRules";
+    }
 
-	public int getThreshold() {
-		return threshold;
-	}
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-	public PricingRuleDto setThreshold(int threshold) {
-		this.threshold = threshold;
-		return this;
-	}
+    public Integer getThreshold() {
+        return threshold;
+    }
 
-	public Double getSpecialPrice() {
-		return specialPrice;
-	}
+    public PricingRuleDto setThreshold(int threshold) {
+        this.threshold = threshold;
+        return this;
+    }
 
-	public PricingRuleDto setSpecialPrice(Double specialPrice) {
-		this.specialPrice = specialPrice;
-		return this;
-	}
+    public Double getSpecialPrice() {
+        return specialPrice;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public PricingRuleDto setSpecialPrice(Double specialPrice) {
+        this.specialPrice = specialPrice;
+        return this;
+    }
 
-	public PricingRuleDto setPrice(double price) {
-		this.price = price;
-		return this;
-	}
+    public Double getPrice() {
+        return price;
+    }
 
-	public StockItem getStockItem() {
-		return stockItem;
-	}
+    public PricingRuleDto setPrice(double price) {
+        this.price = price;
+        return this;
+    }
 
-	public PricingRuleDto setStockItem(StockItem stockItem) {
-		this.stockItem = stockItem;
-		return this;
-	}
+    public StockItem getStockItem() {
+        return stockItem;
+    }
 
-	public int getDiscountType() {
-		return discountType;
-	}
+    public PricingRuleDto setStockItem(StockItem stockItem) {
+        this.stockItem = stockItem;
+        return this;
+    }
 
-	public PricingRuleDto setDiscountType(int discountType) {
-		this.discountType = discountType;
-		return this;
-	}
+    public Integer getDiscountType() {
+        return discountType;
+    }
 
-	@Override
-	public PricingRule getEntityModel() {
-		return new PricingRule()//
-				.setPrice(this.price)//
-				.setStockItemId(this.stockItem)//
-				.setThreshold(this.threshold)//
-				.setSpecialPrice(this.specialPrice);
-	}
+    public PricingRuleDto setDiscountType(int discountType) {
+        this.discountType = discountType;
+        return this;
+    }
 
-	public PricingRuleDto setID(Long id) {
-		this.id=id;
-		return this;
-	}
+    @Override
+    public PricingRule getEntityModel() {
+        return new PricingRule()//
+                .setId(this.id)
+                .setPrice(this.price)//
+                .setStockItemId(this.stockItem)//
+                .setThreshold(this.threshold)//
+                .setSpecialPrice(this.specialPrice);
+    }
+
+    public PricingRuleDto setID(Long id) {
+        this.id = id;
+        return this;
+    }
 }

@@ -1,6 +1,5 @@
 package com.tryouts.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tryouts.dto.PricingRuleDto;
 import com.tryouts.entity.exception.NotValid;
 import jakarta.persistence.*;
@@ -12,10 +11,10 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
     @Id
     @GeneratedValue
     Long id;
-    int threshold;
+    Integer threshold;
     Double specialPrice;
-    double price;
-	int discountType;
+    Double price;
+    Integer discountType;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stockItemId", referencedColumnName = "id")
@@ -33,41 +32,41 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
 
     @Override
     public void validate() throws NotValid {
-        if(price<=0){
-			throw new NotValid("Price must be greater than 0", this);
-		}
-		if(stockItemId ==null){
-			throw new NotValid("Related Stockitem must be set", this);
-		}
-		if(stockItemId.getId()==null){
-			throw new NotValid("Related Stockitem is unkown", this);
-		}
+        if (price <= 0) {
+            throw new NotValid("Price must be greater than 0", this);
+        }
+        if (stockItemId == null) {
+            throw new NotValid("Related Stockitem must be set", this);
+        }
+        if (stockItemId.getId() == null) {
+            throw new NotValid("Related Stockitem is unkown", this);
+        }
     }
 
     @Override
     public PricingRuleDto getDto() {
         return new PricingRuleDto()//
-				.setPrice(this.price)//
-				.setThreshold(this.threshold)
-				.setStockItem(this.stockItemId)
-				.setSpecialPrice(this.specialPrice)
-				.setID(this.id);
+                .setPrice(this.price)//
+                .setThreshold(this.threshold)
+                .setStockItem(this.stockItemId)
+                .setSpecialPrice(this.specialPrice)
+                .setID(this.id);
     }
 
-	@Override
-	public void updateByDto(PricingRuleDto dto) {
-		if(dto.getPrice()>0){
-			this.price=dto.getPrice();
-		}
-		this.specialPrice=dto.getSpecialPrice();
-		if(dto.getStockItem()!=null){
-			this.stockItemId =dto.getStockItem();
-		}
-		this.threshold=dto.getThreshold();
+    @Override
+    public void updateByDto(PricingRuleDto dto) {
+        if (dto.getPrice() > 0) {
+            this.price = dto.getPrice();
+        }
+        this.specialPrice = dto.getSpecialPrice();
+        if (dto.getStockItem() != null) {
+            this.stockItemId = dto.getStockItem();
+        }
+        this.threshold = dto.getThreshold();
 
-	}
+    }
 
-	public int getThreshold() {
+    public Integer getThreshold() {
         return threshold;
     }
 
@@ -94,7 +93,7 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
         return this;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
@@ -103,26 +102,26 @@ public class PricingRule extends ModelEntity<PricingRuleDto> {
         return this;
     }
 
-	public int getDiscountType() {
-		return discountType;
-	}
+    public Integer getDiscountType() {
+        return discountType;
+    }
 
-	public PricingRule setDiscountType(int discountType) {
-		this.discountType = discountType;
-		return this;
-	}
+    public PricingRule setDiscountType(int discountType) {
+        this.discountType = discountType;
+        return this;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		PricingRule that = (PricingRule) o;
-		return threshold == that.threshold && Double.compare(that.price, price) == 0  && Objects.equals(specialPrice, that.specialPrice) && Objects.equals(
-				stockItemId, that.stockItemId);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PricingRule that = (PricingRule) o;
+        return threshold == that.threshold && Double.compare(that.price, price) == 0 && Objects.equals(specialPrice, that.specialPrice) && Objects.equals(
+                stockItemId, that.stockItemId);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, threshold, specialPrice, price, stockItemId);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, threshold, specialPrice, price, stockItemId);
+    }
 }
