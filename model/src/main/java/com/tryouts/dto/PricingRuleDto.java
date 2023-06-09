@@ -2,9 +2,6 @@ package com.tryouts.dto;
 
 import com.tryouts.entity.PricingRule;
 import com.tryouts.entity.StockItem;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 public class PricingRuleDto extends Dto<PricingRule> {
 
@@ -12,8 +9,6 @@ public class PricingRuleDto extends Dto<PricingRule> {
     Double specialPrice;
     Double price;
     Integer discountType;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stockItemId")
     private StockItem stockItem;
 
     public PricingRuleDto() {

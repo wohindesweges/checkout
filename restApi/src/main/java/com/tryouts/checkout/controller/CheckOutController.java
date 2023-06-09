@@ -4,7 +4,6 @@ import com.tryouts.checkout.representation.assembler.CheckoutSumAssembler;
 import com.tryouts.domain.businessLogic.CheckoutActions;
 import com.tryouts.dto.SumForCheckoutDto;
 import com.tryouts.entity.StockItem;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,31 +16,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@ComponentScan(basePackages={"com.tryouts.*"})
-		@RestController
+@RestController
 public class CheckOutController {
     private static final String pathRoot = "checkout";
     private final CheckoutActions checkoutActions;
-	private final CheckoutSumAssembler checkoutSumAssembler ;
+    private final CheckoutSumAssembler checkoutSumAssembler;
 
-	public CheckOutController(CheckoutActions checkoutActions, CheckoutSumAssembler checkoutSumAssembler) {
+    public CheckOutController(CheckoutActions checkoutActions, CheckoutSumAssembler checkoutSumAssembler) {
         this.checkoutActions = checkoutActions;
-		this.checkoutSumAssembler = checkoutSumAssembler;
-	}
+        this.checkoutSumAssembler = checkoutSumAssembler;
+    }
 
 
-	@GetMapping("/" + pathRoot + "/")
-	public EntityModel<SumForCheckoutDto> checkoutItems(@RequestParam(value="items") String items) {
-		Arrays.stream(items.split("")).forEach(checkoutActions::scanItem);
-		final double currentTotal = checkoutActions.getCurrentTotal();
-		final List<StockItem> scannedItems = new ArrayList<>(checkoutActions.getScannedItems());
-		checkoutActions.finishCheckout();
+    @GetMapping("/" + pathRoot + "/")
+    public EntityModel<SumForCheckoutDto> checkoutItems(@RequestParam(value = "items") String items) {
+        Arrays.stream(items.split("")).forEach(checkoutActions::scanItem);
+        final double currentTotal = checkoutActions.getCurrentTotal();
+        final List<StockItem> scannedItems = new ArrayList<>(checkoutActions.getScannedItems());
+        checkoutActions.finishCheckout();
 
-		return checkoutSumAssembler.toModel(new SumForCheckoutDto(currentTotal, scannedItems));
-	}
-	@PostMapping("/" + pathRoot + "/scan")
-	public ResponseEntity<HttpStatus> scanItem(@RequestParam(value="itemName") String name) {
-		checkoutActions.scanItem(name);
-		return new ResponseEntity<>(HttpStatus.ACCEPTED);
-	}
+        return checkoutSumAssembler.toModel(new SumForCheckoutDto(currentTotal, scannedItems));
+    }
+
+    @PostMapping("/" + pathRoot + "/scan")
+    public ResponseEntity<HttpStatus> scanItem(@RequestParam(value = "itemName") String name) {
+        checkoutActions.scanItem(name);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
 }
